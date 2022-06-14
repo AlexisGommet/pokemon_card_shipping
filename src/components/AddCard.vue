@@ -2,15 +2,15 @@
     <form @submit.prevent="sendCard">
         <h4>Ajouter une carte</h4>
         <div>
-            <label for='input1'>Montant 1 : </label>
+            <label for='input1'>Propriété 1 : </label>
             <input type="number" name="input1">
         </div>
         <div>
-            <label for='input2'>Montant 2 : </label>
+            <label for='input2'>Propriété 2 : </label>
             <input type="number" name="input2">
         </div>
         <div>
-            <label for='input3'>Montant 3 : </label>
+            <label for='input3'>Propriété 3 : </label>
             <input type="number" name="input3">
         </div>
         <button type="submit">Ajouter une carte</button>           
@@ -41,7 +41,7 @@ async function sendCard(e) {
       createdAt: serverTimestamp(firestore),
 
     }).then(() => {
-        alert("Envoyé avec succès");
+        alert("Ajouté avec succès");
     }).catch((error) => {
         console.log(error);
     });  
