@@ -9,4 +9,14 @@ export default [
         name: 'basketShow',
         component: () => import('../components/BasketShow.vue'),
     },
+    {
+        path: '/checkoutsuccess',
+        name: 'checkoutsuccess',
+        component: () => import('../components/CheckoutSuccess.vue'),
+    },
+    {
+        path: '/checkoutfailure',
+        name: 'checkoutfailure',
+        component: () => import('../components/CheckoutFailure.vue'),
+    },
 ]

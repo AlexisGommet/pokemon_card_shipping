@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkpokemon_card_shipping"]=self["webpackChunkpokemon_card_shipping"]||[]).push([[537],{7537:function(e,s,n){n.r(s),n.d(s,{default:function(){return p}});var a=n(3396);const c={class:"message"};function r(e,s){return(0,a.wg)(),(0,a.iD)("div",c," Oh oh! Quelque chose semble s'est mal passé... ")}var o=n(89);const t={},u=(0,o.Z)(t,[["render",r],["__scopeId","data-v-da411e12"]]);var p=u}}]);
+//# sourceMappingURL=537.2f876534.js.map

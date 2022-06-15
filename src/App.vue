@@ -10,9 +10,9 @@
             <div>
                 <router-link to="/basketShow">Panier</router-link>
             </div>
-            <div>
+            <!-- <div>
                 <router-link to="">Un autre lien</router-link>
-            </div>
+            </div> -->
             <div>{{ user.displayName }}</div>
             <button id='sign_out' @click="auth.signOut()" class="signOut">Sign Out</button>
         </nav>
