@@ -10,9 +10,6 @@
             <div>
                 <router-link to="/basketShow">Panier</router-link>
             </div>
-            <!-- <div>
-                <router-link to="">Un autre lien</router-link>
-            </div> -->
             <div>{{ user.displayName }}</div>
             <button id='sign_out' @click="auth.signOut()" class="signOut">Sign Out</button>
         </nav>
@@ -22,16 +19,11 @@
 
 <script setup>
 
-// Import the functions you need from the SDKs you need
 import { getAnalytics } from "firebase/analytics";
 import { useAuth } from '@vueuse/firebase/useAuth';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import * as firebase from 'firebase/app';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const app = firebase.initializeApp({
     apiKey: "AIzaSyCbbnyo_TcGYcyze_gZldDtm1eD7XeesSM",
     authDomain: "pokemoncardshipping.firebaseapp.com",

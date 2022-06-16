@@ -1,6 +1,6 @@
 <template>
     <div class="message">
-        Oh oh! Quelque chose semble s'est mal passé...
+        Oh oh! Quelque chose semble s'être mal passé...
     </div>
 </template>
 

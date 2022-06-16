@@ -1,6 +1,6 @@
 <template>
     <div class="message">
-        Merci d'utiliser notre service
+        Merci pour votre achat, il ne vous reste plus qu'à nous envoyé les cartes et on s'occupe du reste.
     </div>
 </template>
 

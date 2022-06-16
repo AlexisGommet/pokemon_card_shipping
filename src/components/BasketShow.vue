@@ -36,7 +36,9 @@ const getquery = query(collection(firestore, "Cards"), where("user", "==", auth.
 const docs = ref();
 
 async function getItems(){
+
     let list = [];
+    
     await getDocs(getquery).then((documents) => {
         documents.forEach((doc) => {
             let data = doc.data();
@@ -61,6 +63,7 @@ function getDate(item){
 }
 
 async function deleteCard(id){
+
     await deleteDoc(doc(firestore, "Cards", id)).then(() => {
         docs.value.splice(docs.value.findIndex(item => item.id === id), 1);
     }).catch((error) => {
@@ -70,8 +73,15 @@ async function deleteCard(id){
 
 async function checkout(){
 
+    let idList = [];
+
+    docs.value.forEach((item) => {
+        idList.push(item.id);
+    });
+
     const body = {
-        "quantity": ""+docs.value.length+""
+        "quantity": ""+docs.value.length+"",
+        "idList": ""+idList+""
     };
 
     try{
@@ -92,9 +102,7 @@ async function checkout(){
 }
 
 onMounted( () => {
-
     getItems();
-
 });
 
 </script>
