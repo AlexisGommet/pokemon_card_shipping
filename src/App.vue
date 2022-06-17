@@ -5,6 +5,9 @@
     <div v-else>
         <nav>
             <div>
+                <router-link to="/">Acceuil</router-link>
+            </div>
+            <div>
                 <router-link to="/addCard">Ajouter des cartes</router-link>
             </div>
             <div>

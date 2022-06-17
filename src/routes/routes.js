@@ -1,5 +1,10 @@
 export default [
     {
+        path: '/',
+        name: 'app',
+        component: () => import('../App.vue'),
+    },
+    {
         path: '/addCard',
         name: 'addCard',
         component: () => import('../components/AddCard.vue'),

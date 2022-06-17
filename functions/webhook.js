@@ -15,81 +15,93 @@ app.use(function(req, res, next) {
     next();
 });
 
-const fulfillOrder = async (session) => {
+async function fulfillOrder (session) {
+    
     const doc = await db.collection("Orders").doc(session.id).get();
-    const docData = doc.data();
-    const idList = docData.idList.split(",");
+    const idList = doc.data().idList.split(",");
+    let batch = db.batch();
 
     idList.forEach((item) => {
-        db.collection("Cards").doc(item).update({
+        batch.update(db.collection("Cards").doc(item), {
             status: "paid"
-        })
-        .then(() => {
-            console.log("Card Document successfully updated! Status : Paid");
-        })
-        .catch((error) => {
-            console.error("Error updating document: ", error);
         });
     });
 
-    db.collection("Orders").doc(session.id).update({
-        status: "paid"
-    })
-    .then(() => {
-        console.log("Order Document successfully updated! Status : Paid");
-    })
-    .catch((error) => {
-        console.error("Error updating document: ", error);
+    batch.update(db.collection("Orders").doc(session.id), {
+        status: "paid",
+        session: JSON.stringify(session)
     });
+
+    try{
+        await batch.commit();
+        console.log(`Updated Order and ${idList.length} Card Documents successfully ! Status : Paid`);
+    }catch(error){
+        console.error("Error updating documents : ", error);
+        throw `${error}`;
+    }  
 }
 
-const createOrder = async (session) => {
-    await db.collection("Orders").doc(session.id).set({
-        status: "waiting",
-        idList: session.metadata.idList
-    })
-    .then(() => {
-        console.log("Document written with ID: ", session.id);
-    })
-    .catch((error) => {
-        console.error("Error adding document: ", error);
-    });
+async function createOrder (session) {
+
+    try{
+        await db.collection("Orders").doc(session.id).set({
+            status: "waiting",
+            idList: session.metadata.idList,
+            session: JSON.stringify(session)
+        })
+        console.log("Document written with ID : ", session.id);
+    }catch(error){
+        console.error("Error creating Order document : ", error);
+        throw `${error}`;
+    } 
 }
 
-const FailedPayment = (session) => {
-    db.collection("Orders").doc(session.id).update({
-        status: "failed",
-    })
-    .then(() => {
+async function FailedPayment (session) {
+
+    try{
+        await db.collection("Orders").doc(session.id).update({
+            status: "failed",
+            session: JSON.stringify(session)
+        })
         console.log("Order Document successfully updated! Status : Failed");
-    })
-    .catch((error) => {
-        console.error("Error updating document: ", error);
-    });
+    }catch(error){
+        console.error("Error updating Order document with status failed : ", error);
+        throw `${error}`;
+    } 
 }
 
-const ExpiredSession = (session) => {
-    db.collection("Orders").doc(session.id).update({
-        status: "expired",
-    })
-    .then(() => {
-        console.log("Document successfully updated!");
-    })
-    .catch((error) => {
-        console.error("Error updating document: ", error);
-    });
+async function ExpiredSession (session) {
+
+    try{
+        await db.collection("Orders").doc(session.id).update({
+            status: "expired",
+            session: JSON.stringify(session)
+        })
+        console.log("Order Document successfully updated! Status : Expired");
+    }catch(error){
+        console.error("Error updating Order document with status expired : ", error);
+        throw `${error}`;
+    } 
 }
 
-const Dispatch = async (event) => {
+async function Dispatch (event) {
+
     const session = event.data.object;
+
     switch (event.type) {
+
         case 'checkout.session.completed': {
 
-            await createOrder(session);
-
+            try{
+                await createOrder(session);
+            }catch(error){
+                throw `${error}`;
+            }
+        
             if (session.payment_status === 'paid') {
                 fulfillOrder(session);
             }
+
             break;
         }
 
@@ -110,7 +122,7 @@ const Dispatch = async (event) => {
     }
 }
 
-app.post('/', (request, response) => {
+app.post('/', async (request, response) => {
 
     let event;
 
@@ -124,15 +136,19 @@ app.post('/', (request, response) => {
                 signature,
                 endpointSecret
             );
-        } catch (err) {
-            console.log(`⚠️  Webhook signature verification failed.`, err.message);
+        } catch (error) {
+            console.error(`⚠️  Webhook signature verification failed.`, error.message);
             return response.sendStatus(400);
         }
 
-        Dispatch(event);  
-    }
-
-    response.status(200).json({received: true});
+        try{
+            await Dispatch(event);
+            response.status(200).json({received: true}); 
+        }catch(error){
+            console.error(`⚠️  Request processing failed.`, error.message);
+            return response.sendStatus(400);
+        }      
+    }  
 });
 
 exports.webhook = functions.https.onRequest(app);
