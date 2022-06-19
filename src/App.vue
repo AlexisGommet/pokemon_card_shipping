@@ -1,22 +1,33 @@
 <template>
-    <button v-if="!isAuthenticated" @click="login" class="signIn">
-        Sign In with Google
-    </button>
-    <div v-else>
-        <nav>
-            <div>
-                <router-link to="/">Acceuil</router-link>
-            </div>
-            <div>
-                <router-link to="/addCard">Ajouter des cartes</router-link>
-            </div>
-            <div>
-                <router-link to="/basketShow">Panier</router-link>
-            </div>
-            <div>{{ user.displayName }}</div>
-            <button id='sign_out' @click="auth.signOut()" class="signOut">Sign Out</button>
-        </nav>
-        <router-view :auth="user"></router-view>
+    <div>
+        <div class="signInContainer">
+            <button v-if="!isAuthenticated && !authLoading && !redirectAuthLoading" @click="login('Google')" class="signIn">
+                Sign In with Google
+            </button>
+            <button v-if="!isAuthenticated && !authLoading && !redirectAuthLoading" @click="login('Twitter')" class="signIn">
+                Sign In with Twitter
+            </button>
+            <button v-if="!isAuthenticated && !authLoading && !redirectAuthLoading" @click="login('Facebook')" class="signIn">
+                Sign In with Facebook
+            </button>
+            <RingLoader v-if="authLoading || redirectAuthLoading" :color="'#54f1d2'" :size="100"/>
+        </div>
+        <div v-if="isAuthenticated">
+            <nav>
+                <div>
+                    <router-link to="/">Acceuil</router-link>
+                </div>
+                <div>
+                    <router-link to="/addCard">Ajouter des cartes</router-link>
+                </div>
+                <div>
+                    <router-link to="/basketShow">Panier</router-link>
+                </div>
+                <div>Bonjour, {{ user.displayName }}</div>
+                <button id='sign_out' @click="auth.signOut()" class="signOut">Sign Out</button>
+            </nav>
+            <router-view :auth="user"></router-view>
+        </div>
     </div>
 </template>
 
@@ -24,8 +35,10 @@
 
 import { getAnalytics } from "firebase/analytics";
 import { useAuth } from '@vueuse/firebase/useAuth';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, TwitterAuthProvider, FacebookAuthProvider  } from 'firebase/auth';
+import { ref, onMounted, watch } from 'vue';
 import * as firebase from 'firebase/app';
+import RingLoader from './components/RingLoader';
 
 const app = firebase.initializeApp({
     apiKey: "AIzaSyCbbnyo_TcGYcyze_gZldDtm1eD7XeesSM",
@@ -37,15 +50,45 @@ const app = firebase.initializeApp({
     measurementId: "G-D41S3B2C60"
 })
 
+const authLoading = ref(false);
+const redirectAuthLoading = ref(false);
+
+onMounted(() => {
+    if(localStorage.getItem("onSignIn") === "true"){
+        redirectAuthLoading.value = true;        
+    }
+});
+
 const analytics = getAnalytics(app);
 
 const auth = getAuth();
 
 const { isAuthenticated, user } = useAuth(auth);
 
-const login = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+watch(isAuthenticated, (currentValue, oldValue) => {
+    console.log(currentValue);
+    if(currentValue === true){
+        redirectAuthLoading.value = !isAuthenticated;
+        localStorage.setItem("onSignIn", "false");    
+    }     
+});
+
+async function login(type) {
+    let provider;
+    switch(type){
+        case 'Google':
+            provider = new GoogleAuthProvider();
+            break;
+        case 'Twitter':
+            provider = new TwitterAuthProvider();
+            break;
+        case 'Facebook':
+            provider = new FacebookAuthProvider();
+            break;
+    }
+    localStorage.setItem("onSignIn", "true");
+    authLoading.value = true;   
+    await signInWithRedirect(auth, provider);
 }
 
 </script>
@@ -69,17 +112,23 @@ nav{
 a:-webkit-any-link {
     color: white;
 }
-.signIn{
+.signInContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: auto;
     margin: 0;
     position: absolute;
     top: 50%;
     left: 50%;
     -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);    
+}
+.signIn{  
     align-items: center;
     appearance: none;
     background-color: #fff;
-    border-radius: 24px;
+    border-radius: 10px;
     border-style: none;
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
     box-sizing: border-box;
@@ -102,8 +151,7 @@ a:-webkit-any-link {
     transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation;
-    width: auto;
+    touch-action: manipulation;  
     will-change: transform,opacity;
     z-index: 0;
 }

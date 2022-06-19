@@ -1,6 +1,6 @@
 <template>
     <div v-if="docs" class="basket">
-        <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#5490d2'" :size="30" class="loaderCheckout"/></button>    
+        <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#5490d2'" :size="30"/></button>    
         <div v-for="(item, i) in docs" :key="i">
             <h4>Carte {{ i + 1 }}<button class="delete" @click="deleteCard(item.id)">X</button></h4>
             <div>
@@ -122,9 +122,7 @@ onMounted( () => {
     top: 300px;
     margin: 100px auto;
 }
-.loaderCheckout{
-    top: -7px;
-}
+
 .basket{
     display: flex;
     flex-direction: column;
@@ -141,6 +139,8 @@ onMounted( () => {
     padding: 10px 35px;
     width: 140px;
     height: 36px;
+    display: flex;
+    justify-content: center;
     align-items: center;
     background-color: #fff;
     border-radius: 24px;
