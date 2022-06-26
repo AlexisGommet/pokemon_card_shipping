@@ -40,17 +40,18 @@
 
         <div v-if="isAuthenticated">
             <nav>
-                <div>
+                <div class="row" style="margin-left: 100px;margin-right: 25px;">
                     <router-link to="/">Acceuil</router-link>
-                </div>
-                <div>
+                
                     <router-link to="/addCard">Ajouter des cartes</router-link>
-                </div>
-                <div>
+              
                     <router-link to="/basketShow">Panier</router-link>
                 </div>
-                <div v-if="user.displayName" >Bonjour, {{ user.displayName }}</div>
-                <button id='sign_out' @click="signOut" class="signOut">Sign Out</button>
+
+                <div class="row" style="margin-right: 100px;margin-left: 25px;">
+                    <div v-if="user.displayName" >Bonjour, {{ user.displayName }}</div>
+                    <button id='sign_out' @click="signOut" class="signOut">Sign Out</button>
+                </div>
             </nav>
             
         </div>
@@ -152,7 +153,7 @@ onMounted(() => {
 });
 
 watch(isAuthenticated, (currentValue, oldValue) => {
-    if(currentValue === true){
+    if(currentValue){
         redirectAuthLoading.value = !isAuthenticated;
         localStorage.setItem("onSignIn", "false");    
     }     
@@ -189,9 +190,9 @@ async function providerLogin(provider, type) {
     
 }
 
-function signOut() {
+function signOut() { 
     auth.signOut();
-    router.push({name: ''});
+    router.push({name: '/'});    
 }
 
 function login(type) {
@@ -268,23 +269,32 @@ async function handleSubmitLogin() {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
+.row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 25px;
+}
+
 nav{
     position: fixed;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 5%;
     top: 0;
     left: 0;
     width: 100%;
     height: 50px;
-    background: rgb(108, 108, 108);
-  
+    color: #161616;
+    background: rgb(129, 129, 129);
+    font-family: 'Roboto';
 }
 
 a:-webkit-any-link {
     color: white;
+    color: #161616;
+    text-decoration: none;
 }
 .loader{
     display: flex;

@@ -2,17 +2,33 @@
     <div v-if="docs" class="basket">
         <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>    
         <div v-for="(item, i) in docs" :key="i" class="card">
-            <h4>Carte {{ i + 1 }}<button class="delete" @click="deleteCard(item.id)">X</button></h4>
+            <div class="top"><h2>Carte {{ i + 1 }}</h2><div class="delete" @click="deleteCard(item.id)">X</div></div>
             <div>
-                Propriété 1 : {{ item.text1 }}
+                Nom de la carte : {{ item.name }}
             </div>
             <br>
             <div>
-                Propriété 2 : {{ item.text2 }}
+                Numéro : {{ item.number }}
             </div>
             <br>
             <div>
-                Propriété 3 : {{ item.text3 }}
+                Série : {{ item.series }}
+            </div>
+            <br>
+            <div>
+                Langue : {{ item.language }}
+            </div>
+            <br>
+            <div>
+                Service Value : {{ item.service ? "Oui" : "Non" }}
+            </div>
+            <br>
+            <div>
+                Valeur déclarée : {{ item.value }}
+            </div>
+            <br>
+            <div>
+                Commentaire : {{ item.comment }}
             </div>
             <br>
             <div>
@@ -26,20 +42,20 @@
 <script setup>
 
 import { getFirestore, collection, orderBy, query, where, getDocs, deleteDoc, doc }  from 'firebase/firestore';
-import { defineProps, ref, onMounted } from 'vue';
+import { defineProps, ref, onMounted, watch } from 'vue';
 import RingLoader from './RingLoader';
 
 const firestore = getFirestore();
 
 const auth = defineProps(['auth']);
 
-const getquery = query(collection(firestore, "Cards"), where("user", "==", auth.auth.uid), where("status", "==", "pending"), orderBy("createdAt"));
-
 const docs = ref();
 const checkoutLoad = ref(false);
 const btnContent = ref("Checkout");
 
 async function getItems(){
+
+    const getquery = query(collection(firestore, "Cards"), where("user", "==", auth.auth.uid), where("status", "==", "pending"), orderBy("createdAt"));
 
     let list = [];
     
@@ -110,8 +126,16 @@ async function checkout(){
     }  
 }
 
+watch(auth, (currentValue, oldValue) => {
+    if(currentValue.auth.uid){
+        getItems();
+    }     
+});
+
 onMounted( () => {
-    getItems();
+    if(auth.auth){
+        getItems();
+    }   
 });
 
 </script>
@@ -119,11 +143,17 @@ onMounted( () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
+.top{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
 .card{
     display: flex;
     flex-direction: column;
     background: rgb(243, 243, 243);
-    gap: 10px;
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
     padding: 20px;
     border-radius: 10px;
@@ -145,8 +175,11 @@ onMounted( () => {
     margin: 100px auto;
 }
 .delete{
-    margin-left: 150px;
+    margin-left: 100px;
     cursor: pointer;
+    font-family: 'Roboto';
+    font-weight: bold;
+    font-size: large;
 }
 .signOut{
     padding: 10px 35px;
