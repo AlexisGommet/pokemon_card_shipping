@@ -8,12 +8,14 @@
             <input type="image" src="./assets/btn_google_signin_dark_normal_web@2x.png" @click="login('Google')" class="signIn" />
             <input type="image" src="./assets/twitter-login.png" @click="login('Twitter')" class="signIn" />
             <input type="image" src="./assets/facebook_login.png" @click="login('Facebook')" class="signIn" />
-
+            
             <div class="lineContainer">
                 <div class="line"></div>
                 <h3>Ou</h3>
                 <div class="line"></div>
             </div>
+
+            <div v-if="alreadyExistErrorLogin" class="error">Ce mail est déjà utilisée pour un autre compte</div>
 
             <div>
                 <label>Email :</label>
@@ -100,7 +102,7 @@
 import { getAnalytics } from "firebase/analytics";
 import { useAuth } from '@vueuse/firebase/useAuth';
 import { useRouter } from 'vue-router';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, TwitterAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, TwitterAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithPopup } from 'firebase/auth';
 import { ref, onMounted, watch } from 'vue';
 import * as firebase from 'firebase/app';
 import RingLoader from './components/RingLoader';
@@ -126,6 +128,7 @@ const emailLogin = ref('');
 const passwordLogin = ref('');
 const passwordError = ref(false);
 const passwordErrorLogin = ref(false);
+const alreadyExistErrorLogin = ref(false);
 const userError = ref(false);
 const tooManyRequestsError = ref(false);
 const reset = ref(false);
@@ -170,10 +173,20 @@ async function handleSubmitReset() {
     }
 }
 
-async function providerLogin(provider) {
+async function providerLogin(provider, type) {
     localStorage.setItem("onSignIn", "true");
-    authLoading.value = true;   
-    await signInWithRedirect(auth, provider);
+    authLoading.value = true;
+    try{
+        type === "F" ? await signInWithPopup(auth, provider): await signInWithRedirect(auth, provider);
+    }catch(error){
+        console.error(error);
+        if(error.code === "auth/account-exists-with-different-credential"){         
+            signOut();
+            authLoading.value = false;
+            alreadyExistErrorLogin.value = true;
+        }
+    }   
+    
 }
 
 function signOut() {
@@ -184,19 +197,20 @@ function signOut() {
 function login(type) {
 
     let provider;
+    alreadyExistErrorLogin.value = false;  
 
     switch(type){
         case 'Google':
             provider = new GoogleAuthProvider();
-            providerLogin(provider);
+            providerLogin(provider, "G");
             break;
         case 'Twitter':
             provider = new TwitterAuthProvider();
-            providerLogin(provider);
+            providerLogin(provider, "T");
             break;
         case 'Facebook':
             provider = new FacebookAuthProvider();
-            providerLogin(provider);
+            providerLogin(provider, "F");
             break;
     }
 }
@@ -228,7 +242,8 @@ async function handleSubmitLogin() {
         passwordLogin.value = "";
         passwordErrorLogin.value = false;
         userError.value = false;
-        tooManyRequestsError.value = false;   
+        tooManyRequestsError.value = false;
+        alreadyExistErrorLogin.value = false;   
     }catch(error){
         console.error(error);
         if(error.code === "auth/user-not-found"){         
