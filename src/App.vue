@@ -5,9 +5,9 @@
 
             <h2>Connectez-vous avec</h2>
 
-            <input type="image" src="./assets/btn_google_signin_dark_normal_web@2x.png" @click="login('Google')" class="signIn" />
-            <input type="image" src="./assets/twitter-login.png" @click="login('Twitter')" class="signIn" />
-            <input type="image" src="./assets/facebook_login.png" @click="login('Facebook')" class="signIn" />
+            <input type="image" alt="google_button" src="./assets/btn_google_signin_dark_normal_web@2x.png" @click="login('Google')" class="signIn" />
+            <input type="image" alt="twitter_button" src="./assets/twitter-login.png" @click="login('Twitter')" class="signIn" />
+            <input type="image" alt="facebook_button" src="./assets/facebook_login.png" @click="login('Facebook')" class="signIn" />
             
             <div class="lineContainer">
                 <div class="line"></div>
@@ -315,6 +315,19 @@ a:-webkit-any-link {
     background: linear-gradient(to bottom right, rgb(118, 118, 118), rgb(66, 66, 65));
     width: 100%;
     height: 100%;
+    overflow-y: scroll;
+}
+.container::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.container::-webkit-scrollbar-track {
+  background: #292929;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: #717075;
+  border-radius:2em;
 }
 .signIn{  
     height: 50px;

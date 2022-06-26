@@ -1,7 +1,7 @@
 <template>
     <div v-if="docs" class="basket">
         <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>    
-        <div v-for="(item, i) in docs" :key="i">
+        <div v-for="(item, i) in docs" :key="i" class="card">
             <h4>Carte {{ i + 1 }}<button class="delete" @click="deleteCard(item.id)">X</button></h4>
             <div>
                 Propriété 1 : {{ item.text1 }}
@@ -117,6 +117,19 @@ onMounted( () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+.card{
+    display: flex;
+    flex-direction: column;
+    background: rgb(243, 243, 243);
+    gap: 10px;
+    box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: 'Roboto';
+    font-weight: bold;
+}
 .loader{
     display: flex;
     top: 300px;
