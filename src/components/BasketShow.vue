@@ -1,4 +1,7 @@
 <template>
+
+    <ModalShow v-if="showModal" :text="modalText" :color="modalColor" />
+    
     <div v-if="docs" class="basket">
         <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>    
         <div v-for="(item, i) in docs" :key="i" class="card">
@@ -36,7 +39,9 @@
             </div>      
         </div>
     </div>
+
     <RingLoader v-else :color="'#505257'" :size="100" class="loader"/>
+
 </template>
 
 <script setup>
@@ -44,6 +49,7 @@
 import { getFirestore, collection, orderBy, query, where, getDocs, deleteDoc, doc }  from 'firebase/firestore';
 import { defineProps, ref, onMounted, watch } from 'vue';
 import RingLoader from './RingLoader';
+import ModalShow from './ModalShow.vue';
 
 const firestore = getFirestore();
 
@@ -52,6 +58,18 @@ const auth = defineProps(['auth']);
 const docs = ref();
 const checkoutLoad = ref(false);
 const btnContent = ref("Checkout");
+const showModal = ref(false);
+const modalText = ref("");
+const modalColor = ref("");
+
+function slideModal(text, color){
+    modalText.value = text;
+    modalColor.value = color;
+    showModal.value = true;
+    setTimeout(() => {
+        showModal.value = false;
+    }, 6000);
+}
 
 async function getItems(){
 
@@ -84,11 +102,15 @@ function getDate(item){
 
 async function deleteCard(id){
 
-    await deleteDoc(doc(firestore, "Cards", id)).then(() => {
+    try{
+        await deleteDoc(doc(firestore, "Cards", id));
         docs.value.splice(docs.value.findIndex(item => item.id === id), 1);
-    }).catch((error) => {
+        slideModal("Carte supprimée avec succès", "green");
+    }catch(error){
         console.log(error);
-    });  
+        slideModal("Une erreur est survenue", "red");
+    }
+    
 }
 
 async function checkout(){
@@ -119,7 +141,7 @@ async function checkout(){
         window.location.href = redirect.url;
 
     }catch(e){
-        window.alert("Erreur");
+        slideModal("Une erreur est survenue", "red");
     }finally{
         checkoutLoad.value = false;
         btnContent.value = "Checkout";
@@ -211,5 +233,15 @@ onMounted( () => {
 .signOut:active {
   box-shadow: 0 4px 4px 0 rgb(60 64 67 / 30%), 0 8px 12px 6px rgb(60 64 67 / 15%);
   outline: none;
+}
+
+@media only screen and (max-width: 500px) {
+    .basket{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -5%);
+        margin-top: 200px;    
+    }
 }
 </style>

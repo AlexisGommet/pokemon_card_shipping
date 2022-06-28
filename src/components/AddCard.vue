@@ -1,4 +1,5 @@
 <template>
+
     <form @submit.prevent="sendCard">
 
         <h2>Ajouter une carte</h2>
@@ -35,29 +36,29 @@
         <button type="submit">+ Ajouter une carte au panier</button> 
 
         <div v-if="fieldError" class="error">Veuillez remplir toutes les informations obligatoires</div>
-        <div v-if="submitSuccess" class="success">Ajouter avec succès</div>
-        <div v-if="submitError" class="error">Erreur lors de l'ajout au panier</div>
 
     </form>
+
+    <ModalShow v-if="showModal" :text="modalText" :color="modalColor" />
+
 </template>
 
 <script setup>
 
 import { getFirestore, collection, addDoc, serverTimestamp }  from 'firebase/firestore';
 import { defineProps, ref } from 'vue';
+import ModalShow from './ModalShow.vue';
 
 const firestore = getFirestore();
 
 const fieldError = ref(false);
-const submitSuccess = ref(false);
-const submitError = ref(false);
+const showModal = ref(false);
+const modalText = ref("");
+const modalColor = ref("");
 
 const auth = defineProps(['auth']);
 
 async function sendCard(e) {
-
-    submitSuccess.value = false;
-    submitError.value = false;
 
     const formData = new FormData(e.target);
     const formProps = Object.fromEntries(formData);
@@ -69,25 +70,35 @@ async function sendCard(e) {
 
     fieldError.value = false;
 
-    await addDoc(collection(firestore, "Cards"), {
+    try{
+        await addDoc(collection(firestore, "Cards"), {
 
-        name:       formProps.name,
-        number:     formProps.number,
-        series:     formProps.series,
-        language:   formProps.language,
-        service:    formProps.service ? true : false,
-        value:      formProps.value,
-        comment:    formProps.comment,
-        user:       auth.auth.uid,
-        status:     "pending",
-        createdAt:  serverTimestamp(firestore),
+            name:       formProps.name,
+            number:     formProps.number,
+            series:     formProps.series,
+            language:   formProps.language,
+            service:    formProps.service ? true : false,
+            value:      formProps.value,
+            comment:    formProps.comment,
+            user:       auth.auth.uid,
+            status:     "pending",
+            createdAt:  serverTimestamp(firestore),
 
-    }).then(() => {
-        submitSuccess.value = true;
-    }).catch((error) => {
+        });
+        slideModal("Carte ajoutée avec succès", "green");
+    }catch(error){
         console.error(error);
-        submitError.value = true;
-    });  
+        slideModal("Une erreur est survenue", "red");
+    }
+}
+
+function slideModal(text, color){
+    modalText.value = text;
+    modalColor.value = color;
+    showModal.value = true;
+    setTimeout(() => {
+        showModal.value = false;
+    }, 6000);
 }
 </script>
 
@@ -105,9 +116,9 @@ form{
     position: absolute;
     top: 50%;
     left: 50%;
+    margin-top: 50px;
     transform: translate(-50%, -50%);
     background: rgb(243, 243, 243);
-    gap: 20px;
     padding: 20px;
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
@@ -131,7 +142,7 @@ form button{
 form div{
     display: flex;
     width: 90%;
-    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
 }
@@ -157,6 +168,40 @@ form input[type=checkbox]{
     font-size: 0.8em;
     font-family: 'Roboto';
     font-weight: bold;
+}
+
+@media only screen and (max-width: 700px) {
+    form {
+        width: 300px;
+    }
+    form div{
+        width: 100%;
+    }
+    form input[type=checkbox]{
+        left: -53.5%;
+    }
+}
+
+@media only screen and (max-width: 350px) {
+    form div{
+        width: 190px;
+        margin-left: 15px;
+    }
+    form {
+        padding: 10px;
+        margin-top: 25px;
+        height: 550px;
+        width: 225px;
+    }
+    form input[type=checkbox]{
+        left: -25%;
+    }
+    label{
+        margin-bottom: 3px;
+    }
+    h2{
+        margin: 5px;
+    }
 }
 
 </style>

@@ -1,7 +1,7 @@
 <template>
 
     <div class="container">
-        <div v-if="!isAuthenticated && !authLoading && !redirectAuthLoading && !showSignUp && !reset" class="signInContainer">
+        <div v-if="!isAuthenticated && !authLoading && !redirectAuthLoading && !showSignUp && !reset && !isHome" class="signInContainer">
 
             <h2>Connectez-vous avec</h2>
 
@@ -40,16 +40,14 @@
 
         <div v-if="isAuthenticated">
             <nav>
-                <div class="row" style="margin-left: 100px;margin-right: 25px;">
-                    <router-link to="/">Acceuil</router-link>
-                
+                <div class="row row-placement1">              
                     <router-link to="/addCard">Ajouter des cartes</router-link>
               
                     <router-link to="/basketShow">Panier</router-link>
                 </div>
 
-                <div class="row" style="margin-right: 100px;margin-left: 25px;">
-                    <div v-if="user.displayName" >Bonjour, {{ user.displayName }}</div>
+                <div class="row row-placement2">
+                    <div id="helloUser" v-if="user.displayName" >Bonjour, {{ user.displayName }}</div>
                     <button id='sign_out' @click="signOut" class="signOut">Sign Out</button>
                 </div>
             </nav>
@@ -94,35 +92,28 @@
             </form>       
         </div>
 
+        <div v-if="isHome">
+            <button id="loginBtn" class="login" @click="isHome = false">Login</button>
+        </div>
+
     </div>
 
 </template>
 
 <script setup>
 
-import { getAnalytics } from "firebase/analytics";
 import { useAuth } from '@vueuse/firebase/useAuth';
 import { useRouter } from 'vue-router';
 import { getAuth, GoogleAuthProvider, signInWithRedirect, TwitterAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithPopup } from 'firebase/auth';
 import { ref, onMounted, watch } from 'vue';
-import * as firebase from 'firebase/app';
 import RingLoader from './components/RingLoader';
-
-const app = firebase.initializeApp({
-    apiKey: "AIzaSyCbbnyo_TcGYcyze_gZldDtm1eD7XeesSM",
-    authDomain: "pokemoncardshipping.firebaseapp.com",
-    projectId: "pokemoncardshipping",
-    storageBucket: "pokemoncardshipping.appspot.com",
-    messagingSenderId: "692726147102",
-    appId: "1:692726147102:web:d5d5f865497b2611e1260f",
-    measurementId: "G-D41S3B2C60"
-})
 
 const router = useRouter();
 
 const showSignUp = ref(false);
 const authLoading = ref(false);
 const redirectAuthLoading = ref(false);
+const isHome = ref(false);
 const email = ref('');
 const password = ref('');
 const emailLogin = ref('');
@@ -137,26 +128,48 @@ const emailReset = ref('');
 const userErrorReset = ref(false);
 const mailSuccess = ref(false);
 
-const analytics = getAnalytics(app);
-
 const auth = getAuth();
 
 const { isAuthenticated, user } = useAuth(auth);
 
 onMounted(() => {
+    if(router.currentRoute.value.fullPath === "/" && !isAuthenticated.value){       
+        setTimeout(() => {
+            if(!isAuthenticated.value){
+                isHome.value = true;
+            }        
+        }, 4000);
+    }   
     if(localStorage.getItem("onSignIn") === "true"){
         redirectAuthLoading.value = true;        
     }
     setTimeout(() => {
         redirectAuthLoading.value = false;
-    }, 8000);
+    }, 6000);
+    if(isAuthenticated.value){
+        router.push({name: 'addCard'});
+    }else if(localStorage.getItem("onSignIn") === "false"){
+        isHome.value = true;
+    }
+});
+
+watch(isHome, (currentValue, oldValue) => {
+    if(!currentValue && !isAuthenticated.value){
+        history.pushState({}, null, router.currentRoute.value.fullPath.split("/")[0] + '/login'); 
+    }     
 });
 
 watch(isAuthenticated, (currentValue, oldValue) => {
     if(currentValue){
+        isHome.value = false;
         redirectAuthLoading.value = !isAuthenticated;
-        localStorage.setItem("onSignIn", "false");    
-    }     
+        localStorage.setItem("onSignIn", "false");
+        router.push({name: 'addCard'});      
+    }else{
+        console.log('here3');
+        isHome.value = true;
+        history.pushState({}, null, router.currentRoute.value.fullPath.split("/")[0] + '/home');
+    }       
 });
 
 async function handleSubmitReset() {
@@ -175,8 +188,10 @@ async function handleSubmitReset() {
 }
 
 async function providerLogin(provider, type) {
+
     localStorage.setItem("onSignIn", "true");
     authLoading.value = true;
+
     try{
         type === "F" ? await signInWithPopup(auth, provider): await signInWithRedirect(auth, provider);
     }catch(error){
@@ -192,11 +207,15 @@ async function providerLogin(provider, type) {
 
 function signOut() { 
     auth.signOut();
-    router.push({name: '/'});    
+    router.push({name: 'login'});    
 }
 
 function login(type) {
 
+    if(document.getElementById("loginBtn")){
+        document.getElementById("loginBtn").remove();
+    }
+    
     let provider;
     alreadyExistErrorLogin.value = false;  
 
@@ -276,6 +295,16 @@ async function handleSubmitLogin() {
     gap: 25px;
 }
 
+.row-placement1{
+    margin-left: 100px;
+    margin-right: 25px;
+}
+
+.row-placement2{
+    margin-right: 100px;
+    margin-left: 25px;
+}
+
 nav{
     position: fixed;
     display: flex;
@@ -289,6 +318,7 @@ nav{
     color: #161616;
     background: rgb(129, 129, 129);
     font-family: 'Roboto';
+    z-index: 10;
 }
 
 a:-webkit-any-link {
@@ -317,6 +347,7 @@ a:-webkit-any-link {
     padding: 20px;
     border-radius: 10px;
     width: 500px;
+    z-index: 10;
 }
 .container{
     position: fixed;
@@ -326,6 +357,7 @@ a:-webkit-any-link {
     width: 100%;
     height: 100%;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 .container::-webkit-scrollbar {
   width: 0.5rem;
@@ -337,7 +369,7 @@ a:-webkit-any-link {
 
 .container::-webkit-scrollbar-thumb {
   background: #717075;
-  border-radius:2em;
+  border-radius: 2em;
 }
 .signIn{  
     height: 50px;
@@ -453,6 +485,22 @@ label {
     cursor: pointer;
 }
 
+.login {
+    position: absolute;
+    text-align: center;
+    background: radial-gradient(circle, rgb(7, 7, 7), rgb(36, 36, 36), rgb(44, 44, 44));
+    border: 0;
+    padding: 10px 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    border-radius: 20px;
+    font-family: 'Roboto';
+    font-weight: bold;
+    cursor: pointer;
+}
+
 h2{
     font-family: 'Roboto';
     font-weight: bold;
@@ -507,5 +555,49 @@ h3{
     color: #1d439b;
     text-decoration: underline;
     margin-top: 15px;
+}
+
+@media only screen and (max-width: 700px) {
+    nav{
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        color: #161616;
+        background: rgb(129, 129, 129);
+        font-family: 'Roboto';
+    }
+    .row-placement1{
+        margin-left: 25px;
+        margin-right: 25px;
+    }
+
+    .row-placement2{
+        margin-right: 25px;
+        margin-left: 25px;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    #helloUser{
+        display: none;
+    }
+    .row{
+        gap: 10px;
+    }
+    .row-placement1{
+        margin-left: 10px;
+        margin-right: 15px;
+    }
+
+    .row-placement2{
+        margin-right: 10px;
+        margin-left: 15px;
+    }
 }
 </style>
