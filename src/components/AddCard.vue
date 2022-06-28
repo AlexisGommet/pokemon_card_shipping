@@ -130,7 +130,7 @@ form button{
     text-align: center;
     background: radial-gradient(circle, rgb(7, 7, 7), rgb(36, 36, 36), rgb(44, 44, 44));
     border: 0;
-    margin-top: 10px;
+    margin-top: 20px;
     padding: 10px 20px;
     color: white;
     border-radius: 20px;

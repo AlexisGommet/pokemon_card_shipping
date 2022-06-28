@@ -28,7 +28,7 @@
 
                 <div @click="reset = true" class="forgotPassword">Mot de passe oublié</div>
 
-                <div class="submit" @click="handleSubmitLogin" style="margin-top: 25px;">Se connecter</div>
+                <div class="submit connectBtn" @click="handleSubmitLogin">Se connecter</div>
                 <div v-if="tooManyRequestsError" class="error">L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Veuillez réessayer plus tard.</div>
             </div>
 
@@ -133,7 +133,7 @@ const auth = getAuth();
 const { isAuthenticated, user } = useAuth(auth);
 
 onMounted(() => {
-    if(router.currentRoute.value.fullPath === "/" && !isAuthenticated.value){       
+    if(router.currentRoute.value.fullPath === "/" && !isAuthenticated.value && localStorage.getItem("onSignIn") === "false"){       
         setTimeout(() => {
             if(!isAuthenticated.value){
                 isHome.value = true;
@@ -143,9 +143,6 @@ onMounted(() => {
     if(localStorage.getItem("onSignIn") === "true"){
         redirectAuthLoading.value = true;        
     }
-    setTimeout(() => {
-        redirectAuthLoading.value = false;
-    }, 6000);
     if(isAuthenticated.value){
         router.push({name: 'addCard'});
     }else if(localStorage.getItem("onSignIn") === "false"){
@@ -166,7 +163,6 @@ watch(isAuthenticated, (currentValue, oldValue) => {
         localStorage.setItem("onSignIn", "false");
         router.push({name: 'addCard'});      
     }else{
-        console.log('here3');
         isHome.value = true;
         history.pushState({}, null, router.currentRoute.value.fullPath.split("/")[0] + '/home');
     }       
@@ -341,7 +337,6 @@ a:-webkit-any-link {
     position: absolute;
     top: 50%;
     left: 50%;
-    -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
     padding: 20px;
@@ -557,6 +552,10 @@ h3{
     margin-top: 15px;
 }
 
+.connectBtn{
+    margin-top: 25px;
+}
+
 @media only screen and (max-width: 700px) {
     nav{
         position: fixed;
@@ -598,6 +597,29 @@ h3{
     .row-placement2{
         margin-right: 10px;
         margin-left: 15px;
+    }
+    .signInContainer{
+        gap: 10px;
+        width: 300px;
+    }
+    label{
+        margin: 0;
+        margin-top: 10px;
+    }
+    .connectBtn{
+        margin-top: 10px;
+    }
+    .forgotPassword{
+        margin-top: 5px;
+    }
+    h2{
+        margin: 5px auto;
+    }
+}
+
+@media only screen and (max-width: 350px) {
+    .signInContainer{
+        width: 225px;
     }
 }
 </style>
