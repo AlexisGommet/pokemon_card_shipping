@@ -2,4 +2,6 @@
 
 https://pokemoncardshipping.web.app/
 
-Website concept for a french company to serve as an intermediary for grading pokemon cards in the US
+Website concept for a French company to serve as an intermediary for grading Pokemon cards in the US with payments powered by Stripe
+
+Built with Vue.js, Firebase, Node.js and Stripe
