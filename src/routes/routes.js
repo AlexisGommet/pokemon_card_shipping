@@ -1,8 +1,24 @@
 export default [
     {
+        path: '/',
+        name: '/',
+        component: () => import('../App.vue'),
+    },
+    
+    {
         path: '/login',
         name: 'login',
-        component: () => import('../App.vue'),
+        component: () => import('../components/LogIn.vue'),
+    },
+    {
+        path: '/passwordReset',
+        name: 'passwordReset',
+        component: () => import('../components/PasswordReset.vue'),
+    },
+    {
+        path: '/signUp',
+        name: 'signUp',
+        component: () => import('../components/SignUp.vue'),
     },
     {
         path: '/addCard',

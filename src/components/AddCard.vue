@@ -1,53 +1,63 @@
 <template>
+    <div v-if="isAuthenticated">
 
-    <form @submit.prevent="sendCard">
+        <form @submit.prevent="sendCard">
 
-        <h2>Ajouter une carte</h2>
+            <h2>Ajouter une carte</h2>
 
-        <div>
-            <label for='name'>Nom de la carte* </label>
-            <input type="text" name="name">
-        </div>
-        <div>
-            <label for='number'>Numéro* </label>
-            <input type="number" name="number">
-        </div>
-        <div>
-            <label for='series'>Série* </label>
-            <input type="text" name="series">
-        </div>
-        <div>
-            <label for='language'>Langue* </label>
-            <input type="text" name="language">
-        </div>
-        <div>
-            <label for='service'>Service Value </label>
-            <input type="checkbox" name="service">
-        </div>
-        <div>
-            <label for='value'>Valeur déclarée* </label>
-            <input type="number" name="value">
-        </div>
-        <div>
-            <label for='comment'>Commentaire </label>
-            <input type="text" name="comment">
-        </div>
+            <div>
+                <label for='name'>Nom de la carte* </label>
+                <input type="text" name="name">
+            </div>
+            <div>
+                <label for='number'>Numéro* </label>
+                <input type="number" name="number">
+            </div>
+            <div>
+                <label for='series'>Série* </label>
+                <input type="text" name="series">
+            </div>
+            <div>
+                <label for='language'>Langue* </label>
+                <input type="text" name="language">
+            </div>
+            <div>
+                <label for='service'>Service Value </label>
+                <input type="checkbox" name="service">
+            </div>
+            <div>
+                <label for='value'>Valeur déclarée* </label>
+                <input type="number" name="value">
+            </div>
+            <div>
+                <label for='comment'>Commentaire </label>
+                <input type="text" name="comment">
+            </div>
 
-        <button type="submit">+ Ajouter une carte au panier</button> 
+            <button type="submit">+ Ajouter une carte au panier</button> 
 
-        <div v-if="fieldError" class="error">Veuillez remplir toutes les informations obligatoires</div>
+            <div v-if="fieldError" class="error">Veuillez remplir toutes les informations obligatoires</div>
 
-    </form>
+        </form>
 
-    <ModalShow v-if="showModal" :text="modalText" :color="modalColor" />
+        <ModalShow v-if="showModal" :text="modalText" :color="modalColor" />
+
+    </div>
+
+    <LogIn v-else/>
 
 </template>
 
 <script setup>
 
 import { getFirestore, collection, addDoc, serverTimestamp }  from 'firebase/firestore';
-import { defineProps, ref } from 'vue';
+import { ref, defineProps } from 'vue';
 import ModalShow from './ModalShow.vue';
+import LogIn from './LogIn.vue';
+
+const props = defineProps(['auth', 'isAuthenticated', 'user']);
+const isAuthenticated = ref(props.isAuthenticated);
+const user = ref(props.user);
 
 const firestore = getFirestore();
 
@@ -55,8 +65,6 @@ const fieldError = ref(false);
 const showModal = ref(false);
 const modalText = ref("");
 const modalColor = ref("");
-
-const auth = defineProps(['auth']);
 
 async function sendCard(e) {
 
@@ -80,7 +88,7 @@ async function sendCard(e) {
             service:    formProps.service ? true : false,
             value:      formProps.value,
             comment:    formProps.comment,
-            user:       auth.auth.uid,
+            user:       user.value.uid,
             status:     "pending",
             createdAt:  serverTimestamp(firestore),
 
@@ -104,6 +112,12 @@ function slideModal(text, color){
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+.loader{
+    display: flex;
+    top: 300px;
+    margin: 100px auto;
+}
 
 form{
     display: flex;

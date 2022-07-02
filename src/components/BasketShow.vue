@@ -1,59 +1,67 @@
 <template>
+    <div v-if="isAuthenticated">
 
-    <ModalShow v-if="showModal" :text="modalText" :color="modalColor" />
-    
-    <div v-if="docs" class="basket">
-        <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>    
-        <div v-for="(item, i) in docs" :key="i" class="card">
-            <div class="top"><h2>Carte {{ i + 1 }}</h2><div class="delete" @click="deleteCard(item.id)">X</div></div>
-            <div>
-                Nom de la carte : {{ item.name }}
+        <ModalShow v-if="showModal" :text="modalText" :color="modalColor" style="top: 0px;"/>
+        
+        <div v-if="docs" class="basket">
+            <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>    
+            <div v-for="(item, i) in docs" :key="i" class="card">
+                <div class="top"><h2>Carte {{ i + 1 }}</h2><div class="delete" @click="deleteCard(item.id)">X</div></div>
+                <div>
+                    Nom de la carte : {{ item.name }}
+                </div>
+                <br>
+                <div>
+                    Numéro : {{ item.number }}
+                </div>
+                <br>
+                <div>
+                    Série : {{ item.series }}
+                </div>
+                <br>
+                <div>
+                    Langue : {{ item.language }}
+                </div>
+                <br>
+                <div>
+                    Service Value : {{ item.service ? "Oui" : "Non" }}
+                </div>
+                <br>
+                <div>
+                    Valeur déclarée : {{ item.value }}
+                </div>
+                <br>
+                <div>
+                    Commentaire : {{ item.comment }}
+                </div>
+                <br>
+                <div>
+                    Ajoutée le : {{ getDate(item) }}
+                </div>      
             </div>
-            <br>
-            <div>
-                Numéro : {{ item.number }}
-            </div>
-            <br>
-            <div>
-                Série : {{ item.series }}
-            </div>
-            <br>
-            <div>
-                Langue : {{ item.language }}
-            </div>
-            <br>
-            <div>
-                Service Value : {{ item.service ? "Oui" : "Non" }}
-            </div>
-            <br>
-            <div>
-                Valeur déclarée : {{ item.value }}
-            </div>
-            <br>
-            <div>
-                Commentaire : {{ item.comment }}
-            </div>
-            <br>
-            <div>
-                Ajoutée le : {{ getDate(item) }}
-            </div>      
         </div>
+
+        <RingLoader v-else :color="'#505257'" :size="100" class="loader"/>
+
     </div>
 
-    <RingLoader v-else :color="'#505257'" :size="100" class="loader"/>
+    <LogIn v-else/>
 
 </template>
 
 <script setup>
 
 import { getFirestore, collection, orderBy, query, where, getDocs, deleteDoc, doc }  from 'firebase/firestore';
-import { defineProps, ref, onMounted, watch } from 'vue';
+import { ref, onMounted, defineProps } from 'vue';
 import RingLoader from './RingLoader';
+import LogIn from './LogIn.vue';
 import ModalShow from './ModalShow.vue';
 
 const firestore = getFirestore();
 
-const auth = defineProps(['auth']);
+const props = defineProps(['auth', 'isAuthenticated', 'user']);
+const isAuthenticated = ref(props.isAuthenticated);
+const user = ref(props.user);
 
 const docs = ref();
 const checkoutLoad = ref(false);
@@ -73,7 +81,7 @@ function slideModal(text, color){
 
 async function getItems(){
 
-    const getquery = query(collection(firestore, "Cards"), where("user", "==", auth.auth.uid), where("status", "==", "pending"), orderBy("createdAt"));
+    const getquery = query(collection(firestore, "Cards"), where("user", "==", user.value.uid), where("status", "==", "pending"), orderBy("createdAt"));
 
     let list = [];
     
@@ -148,16 +156,8 @@ async function checkout(){
     }  
 }
 
-watch(auth, (currentValue, oldValue) => {
-    if(currentValue.auth.uid){
-        getItems();
-    }     
-});
-
 onMounted( () => {
-    if(auth.auth){
-        getItems();
-    }   
+    getItems();
 });
 
 </script>
@@ -182,12 +182,6 @@ onMounted( () => {
     font-family: 'Roboto';
     font-weight: bold;
 }
-.loader{
-    display: flex;
-    top: 300px;
-    margin: 100px auto;
-}
-
 .basket{
     display: flex;
     flex-direction: column;
@@ -195,6 +189,7 @@ onMounted( () => {
     gap: 50px;
     width: 500px;
     margin: 100px auto;
+    word-break: break-word;
 }
 .delete{
     margin-left: 100px;
@@ -235,13 +230,30 @@ onMounted( () => {
   outline: none;
 }
 
+.loader{
+    display: flex;
+    top: 300px;
+    margin: 100px auto;
+}
+
 @media only screen and (max-width: 500px) {
     .basket{
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -5%);
+        transform: translate(-50%, -4%);
         margin-top: 200px;    
+    }
+}
+@media only screen and (max-width: 550px) {
+    .card{
+        width: 300px;
+    }
+}
+
+@media only screen and (max-width: 350px) {
+    .card{
+        width: 225px;
     }
 }
 </style>
