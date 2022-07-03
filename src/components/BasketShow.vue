@@ -4,7 +4,8 @@
         <ModalShow v-if="showModal" :text="modalText" :color="modalColor" style="top: 0px;"/>
         
         <div v-if="docs" class="basket">
-            <button @click="checkout" class="signOut">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>    
+            <button v-if="docs.length > 0" @click="goToOrder" class="signOut">Commander</button>
+            <div v-else class="empty">Le panier est vide</div>    
             <div v-for="(item, i) in docs" :key="i" class="card">
                 <div class="top"><h2>Carte {{ i + 1 }}</h2><div class="delete" @click="deleteCard(item.id)">X</div></div>
                 <div>
@@ -50,25 +51,34 @@
 </template>
 
 <script setup>
-
+import { useAuth } from '@vueuse/firebase/useAuth';
 import { getFirestore, collection, orderBy, query, where, getDocs, deleteDoc, doc }  from 'firebase/firestore';
-import { ref, onMounted, defineProps } from 'vue';
+import { getAuth } from 'firebase/auth';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import RingLoader from './RingLoader';
 import LogIn from './LogIn.vue';
 import ModalShow from './ModalShow.vue';
 
+const router = useRouter();
+
 const firestore = getFirestore();
 
-const props = defineProps(['auth', 'isAuthenticated', 'user']);
-const isAuthenticated = ref(props.isAuthenticated);
-const user = ref(props.user);
+const auth = getAuth();
+const { isAuthenticated, user } = useAuth(auth);
 
 const docs = ref();
-const checkoutLoad = ref(false);
-const btnContent = ref("Checkout");
 const showModal = ref(false);
 const modalText = ref("");
 const modalColor = ref("");
+
+onMounted( () => {
+    getItems();
+});
+
+function goToOrder(){
+    router.push({name: 'order'})
+}
 
 function slideModal(text, color){
     modalText.value = text;
@@ -121,50 +131,16 @@ async function deleteCard(id){
     
 }
 
-async function checkout(){
-
-    checkoutLoad.value = true;
-    btnContent.value = "";
-
-    let idList = [];
-
-    docs.value.forEach((item) => {
-        idList.push(item.id);
-    });
-
-    const body = {
-        "quantity": ""+docs.value.length+"",
-        "idList": ""+idList+""
-    };
-
-    try{
-
-        const response = await fetch('https://us-central1-pokemoncardshipping.cloudfunctions.net/checkout', {
-            method: 'post',
-            body: JSON.stringify(body),
-            headers: {'Content-Type': 'application/json'},
-        });
-        
-        const redirect = await response.json()
-        window.location.href = redirect.url;
-
-    }catch(e){
-        slideModal("Une erreur est survenue", "red");
-    }finally{
-        checkoutLoad.value = false;
-        btnContent.value = "Checkout";
-    }  
-}
-
-onMounted( () => {
-    getItems();
-});
-
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
+.empty{
+    font-family: 'Roboto';
+    font-weight: bold;
+    font-size: xx-large;
+}
 .top{
     display: flex;
     flex-direction: row;
@@ -200,7 +176,7 @@ onMounted( () => {
 }
 .signOut{
     padding: 10px 35px;
-    width: 140px;
+    width: 175px;
     height: 36px;
     display: flex;
     justify-content: center;

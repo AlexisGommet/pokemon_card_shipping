@@ -1,10 +1,4 @@
-export default [
-    {
-        path: '/',
-        name: '/',
-        component: () => import('../App.vue'),
-    },
-    
+export default [   
     {
         path: '/login',
         name: 'login',
@@ -26,17 +20,22 @@ export default [
         component: () => import('../components/AddCard.vue'),
     },
     {
-        path: '/basketShow',
-        name: 'basketShow',
+        path: '/basket',
+        name: 'basket',
         component: () => import('../components/BasketShow.vue'),
     },
     {
-        path: '/checkoutsuccess',
+        path: '/order',
+        name: 'order',
+        component: () => import('../components/OrderShow.vue'),
+    },
+    {
+        path: '/checkoutSuccess',
         name: 'checkoutsuccess',
         component: () => import('../components/CheckoutSuccess.vue'),
     },
     {
-        path: '/checkoutfailure',
+        path: '/checkoutFailure',
         name: 'checkoutfailure',
         component: () => import('../components/CheckoutFailure.vue'),
     },

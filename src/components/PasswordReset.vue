@@ -18,17 +18,17 @@
 </template>
 
 <script setup>
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { ref, onMounted, watch, defineEmits, defineProps } from 'vue';
+import { useAuth } from '@vueuse/firebase/useAuth';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { ref, onMounted, watch, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 
 const emits = defineEmits(['routeToSignUp', 'routeToReset', 'goBack']);
 
 const router = useRouter();
 
-const props = defineProps(['auth', 'isAuthenticated', 'user']);
-const auth = ref(props.auth);
-const isAuthenticated = ref(props.isAuthenticated);
+const auth = getAuth();
+const { isAuthenticated, user } = useAuth(auth);
 
 const emailReset = ref('');
 const userErrorReset = ref(false);
@@ -51,7 +51,7 @@ watch(isAuthenticated, (currentValue, oldValue) => {
 async function handleSubmitReset() {
 
     try{
-        await sendPasswordResetEmail(auth.value, emailReset.value);
+        await sendPasswordResetEmail(auth, emailReset.value);
         emailReset.value = "";
         userErrorReset.value = false;
         mailSuccess.value = true;

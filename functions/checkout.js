@@ -22,9 +22,9 @@ app.post('/', async (req, res) => {
             },
         ],
         mode: 'payment',
-        metadata: {"idList": req.body.idList},
-        success_url: 'https://pokemoncardshipping.web.app/checkoutsuccess',
-        cancel_url: 'https://pokemoncardshipping.web.app/checkoutfailure',
+        metadata: {"idList": req.body.idList, "orderInfo": req.body.orderInfo},
+        success_url: 'https://pokemoncardshipping.web.app/checkoutSuccess',
+        cancel_url: 'https://pokemoncardshipping.web.app/checkoutFailure',
     });
 
     res.json({url: session.url});

@@ -47,6 +47,7 @@ async function createOrder (session) {
         await db.collection("Orders").doc(session.id).set({
             status: "waiting",
             idList: session.metadata.idList,
+            orderInfo: session.metadata.orderInfo,
             session: JSON.stringify(session)
         })
         console.log("Document written with ID : ", session.id);

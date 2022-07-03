@@ -12,6 +12,7 @@
         <label>Mot de passe :</label>
         <input class="inputClass" type="password" v-model="password" required>            
         <div v-if="passwordError" class="error">Votre mot de passe doit être de 6 charactères ou plus</div>
+        <div v-if="alreadyExistErrorSignUp" class="error">Mail déjà utilisé</div>
 
         <button class="submit" type="submit">Créer un compte</button>  
 
@@ -20,22 +21,22 @@
 </template>
 
 <script setup>
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { ref, onMounted, watch, defineEmits, defineProps } from 'vue';
+import { useAuth } from '@vueuse/firebase/useAuth';
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { ref, onMounted, watch, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 
 const emits = defineEmits(['routeToSignUp', 'routeToReset', 'goBack']);
 
 const router = useRouter();
 
-const props = defineProps(['auth', 'isAuthenticated', 'user']);
-const auth = ref(props.auth);
-const isAuthenticated = ref(props.isAuthenticated);
-const user = ref(props.user);
+const auth = getAuth();
+const { isAuthenticated, user } = useAuth(auth);
 
 const email = ref('');
 const password = ref('');
 const passwordError = ref(false);
+const alreadyExistErrorSignUp = ref(false);
 
 onMounted(() => {
     if(isAuthenticated.value){
@@ -54,19 +55,25 @@ watch(isAuthenticated, (currentValue, oldValue) => {
 
 async function handleSubmit() {
 
+    alreadyExistErrorSignUp.value = false;
+
     if(password.value.length < 6){
         passwordError.value = true;
         return;
     }
 
     try{
-        await createUserWithEmailAndPassword(auth.value, email.value, password.value);
+        await createUserWithEmailAndPassword(auth, email.value, password.value);
         email.value = "";
         password.value = "";
         passwordError.value = false;
+        console.log(user)
         await sendEmailVerification(user.value.auth.currentUser);
     }catch(error){
         console.error(error);
+        if(error.code === "auth/email-already-in-use"){
+            alreadyExistErrorSignUp.value = true;
+        }
     }     
 }
 

@@ -8,7 +8,7 @@
                 <div class="row row-placement1">              
                     <router-link to="/addCard">Ajouter des cartes</router-link>
               
-                    <router-link to="/basketShow">Panier</router-link>
+                    <router-link to="/basket">Panier</router-link>
                 </div>
 
                 <div class="row row-placement2">
@@ -19,9 +19,15 @@
             
         </div>
 
-        <router-view v-if="!firstLoad" @goBack="goBack()" @routeToSignUp="routeTo('signUp')" @routeToReset="routeTo('passwordReset')" :auth="auth" :isAuthenticated="isAuthenticated" :user="user"></router-view> 
+        <router-view v-if="!firstLoad" @goBack="goBack()" @routeToSignUp="routeTo('signUp')" @routeToReset="routeTo('passwordReset')"></router-view> 
 
-        <button v-if="router.currentRoute.value.fullPath === '/' && !firstLoad" id="loginBtn" class="login" @click="routeTo('login')">Login</button>
+        <div v-if="router.currentRoute.value.fullPath === '/' && !firstLoad">
+            <h1>PokePostie</h1>
+            <p>Une carte à grader ?</p><br><br><br><br>
+            <p class="p2">Il suffit de nous l'envoyer, et on s'occupe du reste !</p>
+            <img src="./assets/graphic-removebg.png" alt="graphic" class="image" />
+            <button class="login" @click="routeTo('login')">Login</button>
+        </div>
 
     </div>
 
@@ -30,17 +36,13 @@
 </template>
 
 <script setup>
-
-// TODO : Front page, ask for address before checkout
-
 import { useAuth } from '@vueuse/firebase/useAuth';
 import { useRouter } from 'vue-router';
 import { getAuth } from 'firebase/auth';
-import { onMounted, watch, ref, defineEmits, defineProps } from 'vue';
+import { onMounted, watch, ref, defineEmits } from 'vue';
 import RingLoader from './components/RingLoader';
 
 const emits = defineEmits(['routeToSignUp', 'routeToReset', 'goBack']);
-const props = defineProps(['auth', 'isAuthenticated', 'user']);
 
 const router = useRouter();
 
@@ -50,7 +52,7 @@ const { isAuthenticated, user } = useAuth(auth);
 const firstLoad = ref(false);
 
 onMounted(() => {
-    if(isAuthenticated.value){
+    if(isAuthenticated.value && router.currentRoute.value.fullPath !== '/checkoutSuccess' && router.currentRoute.value.fullPath !== '/checkoutFailure'){
         localStorage.setItem("onSignIn", "false");
         router.push({name: 'addCard'});  
     }
@@ -61,7 +63,7 @@ onMounted(() => {
 });
 
 watch(isAuthenticated, (currentValue, oldValue) => {
-    if(currentValue){
+    if(currentValue && router.currentRoute.value.fullPath !== '/checkoutSuccess' && router.currentRoute.value.fullPath !== '/checkoutFailure'){
         localStorage.setItem("onSignIn", "false");
         router.push({name: 'addCard'});      
     }     
@@ -84,6 +86,34 @@ function goBack(){
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+h1{
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    font-family: 'Roboto';
+    font-weight: bold;
+    font-size: xx-large;
+    transform: translate(-50%, 100%) scale(2);
+}
+
+p{
+    position: absolute;
+    left: 50%;
+    width: 750px;
+    text-align: center;
+    font-family: 'Roboto';
+    font-weight: bold;
+    font-size: xx-large;
+    transform: translate(-50%, 400%);
+}
+
+.image{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.5);
+}
 
 .loader{
     display: flex;
@@ -203,16 +233,19 @@ a:-webkit-any-link {
 .login {
     position: absolute;
     text-align: center;
+    width: 200px;
+    height: 50px;
     background: radial-gradient(circle, rgb(7, 7, 7), rgb(36, 36, 36), rgb(44, 44, 44));
     border: 0;
     padding: 10px 20px;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 600%);
     color: white;
     border-radius: 20px;
     font-family: 'Roboto';
     font-weight: bold;
+    font-size: x-large;
     cursor: pointer;
 }
 
@@ -257,6 +290,84 @@ a:-webkit-any-link {
     .row-placement2{
         margin-right: 10px;
         margin-left: 15px;
+    }
+
+    h1{
+        font-size: xx-large;
+        transform: translate(-50%, 100%) scale(2);
+    }
+
+    p{
+        width: 750px;
+        font-size: xx-large;
+        transform: translate(-50%, 400%);
+    }
+
+    .image{
+        position: absolute;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+}
+
+@media only screen and (max-height: 850px) {
+
+    h1{
+        font-size: x-large;
+    }
+
+    p{
+        font-size: x-large;
+    }
+
+    .image{
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .login {
+        transform: translate(-50%, 400%);
+    }
+}
+
+@media only screen and (max-height: 675px) {
+
+    h1{
+        font-size: x-large;
+    }
+
+    p{
+        font-size: x-large;
+    }
+
+    .image{
+        transform: translate(-50%, -50%) scale(0.75);
+    }
+
+    .login {
+        transform: translate(-50%, 350%);
+    }
+}
+
+@media only screen and (max-width: 500px) {
+
+    h1{
+        font-size: large;
+    }
+
+    p{
+        font-size: large;
+        width: 275px;
+    }
+
+    .p2{
+        transform: translate(-50%, 200%);
+    }
+
+    .image{
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    .login {
+        transform: translate(-50%, 350%);
     }
 }
 </style>

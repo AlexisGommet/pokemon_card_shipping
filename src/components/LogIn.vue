@@ -1,37 +1,41 @@
 <template>
 
-    <div v-if="!authLoading && !redirectAuthLoading" class="signInContainer">
+    <div v-if="!authLoading && !redirectAuthLoading" >
 
-        <h2>Connectez-vous avec</h2>
+        <form @submit.prevent="handleSubmitLogin" class="signInContainer">
 
-        <input type="image" alt="google_button" src="./assets/btn_google_signin_dark_normal_web@2x.png" @click="login('Google')" class="signIn" />
-        <input type="image" alt="twitter_button" src="./assets/twitter-login.png" @click="login('Twitter')" class="signIn" />
-        <input type="image" alt="facebook_button" src="./assets/facebook_login.png" @click="login('Facebook')" class="signIn" />
-        
-        <div class="lineContainer">
-            <div class="line"></div>
-            <h3>Ou</h3>
-            <div class="line"></div>
-        </div>
+            <h2>Connectez-vous avec</h2>
 
-        <div v-if="alreadyExistErrorLogin" class="error">Ce mail est déjà utilisée pour un autre compte</div>
+            <input type="image" alt="google_button" src="./assets/btn_google_signin_dark_normal_web@2x.png" @click="login('Google')" class="signIn" />
+            <input type="image" alt="twitter_button" src="./assets/twitter-login.png" @click="login('Twitter')" class="signIn" />
+            <input type="image" alt="facebook_button" src="./assets/facebook_login.png" @click="login('Facebook')" class="signIn" />
+            
+            <div class="lineContainer">
+                <div class="line"></div>
+                <h3>Ou</h3>
+                <div class="line"></div>
+            </div>
 
-        <div>
-            <label>Email :</label>
-            <input class="inputClass" type="email" v-model="emailLogin" required>
-            <div v-if="userError" class="error">Cet utilisateur n'existe pas</div>
+            <div v-if="alreadyExistErrorLogin" class="error">Ce mail est déjà utilisée pour un autre compte</div>
 
-            <label>Mot de passe :</label>
-            <input class="inputClass" type="password" v-model="passwordLogin" required>
-            <div v-if="passwordErrorLogin" class="error">Mot de passe incorret</div>
+            <div>
+                <label>Email :</label>
+                <input class="inputClass" type="email" v-model="emailLogin" required>
+                <div v-if="userError" class="error">Cet utilisateur n'existe pas</div>
 
-            <div @click="emits('routeToReset')" class="forgotPassword">Mot de passe oublié</div>
+                <label>Mot de passe :</label>
+                <input class="inputClass" type="password" v-model="passwordLogin" required>
+                <div v-if="passwordErrorLogin" class="error">Mot de passe incorret</div>
 
-            <div class="submit connectBtn" @click="handleSubmitLogin">Se connecter</div>
-            <div v-if="tooManyRequestsError" class="error">L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Veuillez réessayer plus tard.</div>
-        </div>
+                <div @click="emits('routeToReset')" class="forgotPassword">Mot de passe oublié</div>
 
-        <a @click="emits('routeToSignUp')" class="submit" style="margin-top: 0px;">Créer un compte</a>
+                <button type="submit" id="connect" class="submit connectBtn">Se connecter</button>
+                <div v-if="tooManyRequestsError" class="error">L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Veuillez réessayer plus tard.</div>
+            </div>
+
+            <a @click="emits('routeToSignUp')" class="submit" style="margin-top: 0px;">Créer un compte</a>
+
+        </form>
         
     </div>
 
@@ -42,15 +46,14 @@
 <script setup>
 import { useAuth } from '@vueuse/firebase/useAuth';
 import { useRouter } from 'vue-router';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, TwitterAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
-import { ref, onMounted, watch, defineEmits, defineProps } from 'vue';
+import { getAuth, GoogleAuthProvider, TwitterAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { ref, onMounted, watch, defineEmits } from 'vue';
 import RingLoader from './RingLoader';
 
 const emits = defineEmits(['routeToSignUp', 'routeToReset', 'goBack']);
 
 const router = useRouter();
 
-const props = defineProps(['auth', 'isAuthenticated', 'user']);
 const auth = getAuth();
 const { isAuthenticated, user } = useAuth(auth);
 
@@ -84,13 +87,13 @@ watch(isAuthenticated, (currentValue, oldValue) => {
     }     
 });
 
-async function providerLogin(provider, type) {
+async function providerLogin(provider) {
 
     localStorage.setItem("onSignIn", "true");
     authLoading.value = true;
     
     try{
-        await signInWithRedirect(auth, provider);
+        await signInWithPopup(auth, provider);
     }catch(error){
         console.error(error);
         if(error.code === "auth/account-exists-with-different-credential"){         
@@ -109,15 +112,15 @@ function login(type) {
     switch(type){
         case 'Google':
             provider = new GoogleAuthProvider();
-            providerLogin(provider, "G");
+            providerLogin(provider);
             break;
         case 'Twitter':
             provider = new TwitterAuthProvider();
-            providerLogin(provider, "T");
+            providerLogin(provider);
             break;
         case 'Facebook':
             provider = new FacebookAuthProvider();
-            providerLogin(provider, "F");
+            providerLogin(provider);
             break;
     }
 }
@@ -262,7 +265,13 @@ h2{
 }
 
 .connectBtn{
+    margin: 0 auto;
     margin-top: 25px;
+    width: 100%;
+    font-size: medium;
+    font-family: 'Roboto';
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .loader{

@@ -49,15 +49,15 @@
 </template>
 
 <script setup>
-
+import { useAuth } from '@vueuse/firebase/useAuth';
 import { getFirestore, collection, addDoc, serverTimestamp }  from 'firebase/firestore';
-import { ref, defineProps } from 'vue';
+import { getAuth } from 'firebase/auth';
+import { ref } from 'vue';
 import ModalShow from './ModalShow.vue';
 import LogIn from './LogIn.vue';
 
-const props = defineProps(['auth', 'isAuthenticated', 'user']);
-const isAuthenticated = ref(props.isAuthenticated);
-const user = ref(props.user);
+const auth = getAuth();
+const { isAuthenticated, user } = useAuth(auth);
 
 const firestore = getFirestore();
 
