@@ -4,6 +4,7 @@ admin.initializeApp(functions.config().firebase, "webhook");
 const express = require('express');
 const db = admin.firestore();
 const app = express();
+const fetch = require('node-fetch');
 
 const stripe = require('stripe')(functions.config().keys.test_secret_key);
 
@@ -14,6 +15,32 @@ app.use(function(req, res, next) {
     res.setHeader("Access-Control-Allow-Headers", "*");
     next();
 });
+
+async function sendMail(session){
+
+    const body = {
+        "quantity": ""+session.metadata.quantity+"",
+        "mail": ""+session.metadata.mail+""
+    };
+
+    try{
+
+        const response = await fetch('https://us-central1-pokemoncardshipping.cloudfunctions.net/orderMail', {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: {'Content-Type': 'application/json'},
+        });
+        
+        if(response.status === 200){
+            console.log("Mail sent successfully");
+        }else if(response.status === 400){
+            console.log("Something went wrong with mail sending");
+        }
+
+    }catch(error){
+        console.error("Failed to send mail", error);
+    }
+}
 
 async function fulfillOrder (session) {
     
@@ -31,14 +58,16 @@ async function fulfillOrder (session) {
         status: "paid",
         session: JSON.stringify(session)
     });
-
+    
     try{
         await batch.commit();
         console.log(`Updated Order and ${idList.length} Card Documents successfully ! Status : Paid`);
+        
     }catch(error){
         console.error("Error updating documents : ", error);
         throw `${error}`;
-    }  
+    }
+    sendMail(session); 
 }
 
 async function createOrder (session) {

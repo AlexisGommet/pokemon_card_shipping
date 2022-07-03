@@ -14,8 +14,11 @@
   "main": "index.js",
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
+    "elasticemail": "^0.2.0",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.22.0",
+    "node-fetch": "^2.6.7",
+    "nodemailer": "^6.7.6",
     "stripe": "^9.8.0"
   },
   "devDependencies": {

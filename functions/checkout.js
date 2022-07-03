@@ -22,7 +22,7 @@ app.post('/', async (req, res) => {
             },
         ],
         mode: 'payment',
-        metadata: {"idList": req.body.idList, "orderInfo": req.body.orderInfo},
+        metadata: {"idList": req.body.idList, "orderInfo": req.body.orderInfo, "quantity": req.body.quantity, "mail": req.body.email},
         success_url: 'https://pokemoncardshipping.web.app/checkoutSuccess',
         cancel_url: 'https://pokemoncardshipping.web.app/checkoutFailure',
     });

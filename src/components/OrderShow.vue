@@ -128,7 +128,8 @@ async function checkout(e){
     const body = {
         "quantity": ""+docs.value.length+"",
         "idList": ""+idList+"",
-        "orderInfo": ""+JSON.stringify(formProps)+""
+        "orderInfo": ""+JSON.stringify(formProps)+"",
+        "email": ""+formProps.mail+""
     };
 
     try{
@@ -139,10 +140,11 @@ async function checkout(e){
             headers: {'Content-Type': 'application/json'},
         });
         
-        const redirect = await response.json()
+        const redirect = await response.json();
         window.location.href = redirect.url;
 
-    }catch(e){
+    }catch(error){
+        console.error(error);
         slideModal("Une erreur est survenue", "red");
     }finally{
         checkoutLoad.value = false;
