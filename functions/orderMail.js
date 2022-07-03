@@ -25,7 +25,7 @@ app.post('/', async (request, response) => {
         from_name: 'PokePostie',
         to: request.body.mail,
         subject: 'Votre commande PokePostie',
-        body_text: "Merci d'avoir choisi PokePostie\n\nVoici votre commande :\n\nCartes : "+request.body.quantity+"\nTotal : "+request.body.quantity+".00 €\n\n\n\n"
+        body_text: "Merci d'avoir choisi PokePostie\n\nVoici votre commande :\n\nCartes : "+request.body.quantity+"\nTotal : "+request.body.quantity+".00 €\n\n\n\nUnsubscribe :"
     };
 
     client.mailer.send(msg, function(error, result) {
