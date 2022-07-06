@@ -1,22 +1,26 @@
 <template>
 
-    <form @submit.prevent="handleSubmit" class="signUpForm">
+    <div>
 
-        <img src="../assets/arrow-left-solid.svg" alt="arrow_left" class="arrow" @click="emits('goBack')"/>
+        <form @submit.prevent="handleSubmit" class="signUpForm">
 
-        <h2>Création de compte</h2>
+            <img src="../assets/arrow-left-solid.svg" alt="arrow_left" class="arrow" @click="emits('goBack')"/>
 
-        <label>Email :</label>
-        <input class="inputClass" type="email" v-model="email" required>
+            <h2>Création de compte</h2>
 
-        <label>Mot de passe :</label>
-        <input class="inputClass" type="password" v-model="password" required>            
-        <div v-if="passwordError" class="error">Votre mot de passe doit être de 6 charactères ou plus</div>
-        <div v-if="alreadyExistErrorSignUp" class="error">Mail déjà utilisé</div>
+            <label>Email :</label>
+            <input class="inputClass" type="email" v-model="email" required>
 
-        <button class="submit" type="submit">Créer un compte</button>  
+            <label>Mot de passe :</label>
+            <input class="inputClass" type="password" v-model="password" required>            
+            <div v-if="passwordError" class="error">Votre mot de passe doit être de 6 charactères ou plus</div>
+            <div v-if="alreadyExistErrorSignUp" class="error">Mail déjà utilisé</div>
 
-    </form>       
+            <button class="submit" type="submit">Créer un compte</button>  
+
+        </form> 
+        
+    </div>
 
 </template>
 

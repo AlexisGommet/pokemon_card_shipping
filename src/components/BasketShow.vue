@@ -1,52 +1,57 @@
 <template>
-    <div v-if="isAuthenticated">
 
-        <ModalShow v-if="showModal" :text="modalText" :color="modalColor" style="top: 0px;"/>
-        
-        <div v-if="docs" class="basket">
-            <button v-if="docs.length > 0" @click="goToOrder" class="signOut">Commander</button>
-            <div v-else class="empty">Le panier est vide</div>    
-            <div v-for="(item, i) in docs" :key="i" class="card">
-                <div class="top"><h2>Carte {{ i + 1 }}</h2><div class="delete" @click="deleteCard(item.id)">X</div></div>
-                <div>
-                    Nom de la carte : {{ item.name }}
+    <div>
+ 
+        <div v-if="isAuthenticated">
+
+            <ModalShow v-if="showModal" :text="modalText" :color="modalColor" style="top: 0px;"/>
+            
+            <div v-if="docs" class="basket">
+                <button v-if="docs.length > 0" @click="goToOrder" class="signOut">Commander</button>
+                <div v-else class="empty">Le panier est vide</div>    
+                <div v-for="(item, i) in docs" :key="i" class="card">
+                    <div class="top"><h2>Carte {{ i + 1 }}</h2><div class="delete" @click="deleteCard(item.id)">X</div></div>
+                    <div>
+                        Nom de la carte : {{ item.name }}
+                    </div>
+                    <br>
+                    <div>
+                        Numéro : {{ item.number }}
+                    </div>
+                    <br>
+                    <div>
+                        Série : {{ item.series }}
+                    </div>
+                    <br>
+                    <div>
+                        Langue : {{ item.language }}
+                    </div>
+                    <br>
+                    <div>
+                        Service Value : {{ item.service ? "Oui" : "Non" }}
+                    </div>
+                    <br>
+                    <div>
+                        Valeur déclarée : {{ item.value }}
+                    </div>
+                    <br>
+                    <div>
+                        Commentaire : {{ item.comment }}
+                    </div>
+                    <br>
+                    <div>
+                        Ajoutée le : {{ getDate(item) }}
+                    </div>      
                 </div>
-                <br>
-                <div>
-                    Numéro : {{ item.number }}
-                </div>
-                <br>
-                <div>
-                    Série : {{ item.series }}
-                </div>
-                <br>
-                <div>
-                    Langue : {{ item.language }}
-                </div>
-                <br>
-                <div>
-                    Service Value : {{ item.service ? "Oui" : "Non" }}
-                </div>
-                <br>
-                <div>
-                    Valeur déclarée : {{ item.value }}
-                </div>
-                <br>
-                <div>
-                    Commentaire : {{ item.comment }}
-                </div>
-                <br>
-                <div>
-                    Ajoutée le : {{ getDate(item) }}
-                </div>      
             </div>
+
+            <RingLoader v-else :color="'#505257'" :size="100" class="loader"/>
+
         </div>
 
-        <RingLoader v-else :color="'#505257'" :size="100" class="loader"/>
+        <LogIn v-else/>
 
     </div>
-
-    <LogIn v-else/>
 
 </template>
 

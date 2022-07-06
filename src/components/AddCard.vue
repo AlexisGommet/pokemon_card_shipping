@@ -1,50 +1,55 @@
 <template>
-    <div v-if="isAuthenticated">
 
-        <form @submit.prevent="sendCard">
+    <div>
+        
+        <div v-if="isAuthenticated">
 
-            <h2>Ajouter une carte</h2>
+            <form @submit.prevent="sendCard">
 
-            <div>
-                <label for='name'>Nom de la carte* </label>
-                <input type="text" name="name">
-            </div>
-            <div>
-                <label for='number'>Numéro* </label>
-                <input type="number" name="number">
-            </div>
-            <div>
-                <label for='series'>Série* </label>
-                <input type="text" name="series">
-            </div>
-            <div>
-                <label for='language'>Langue* </label>
-                <input type="text" name="language">
-            </div>
-            <div>
-                <label for='service'>Service Value </label>
-                <input type="checkbox" name="service">
-            </div>
-            <div>
-                <label for='value'>Valeur déclarée* </label>
-                <input type="number" name="value">
-            </div>
-            <div>
-                <label for='comment'>Commentaire </label>
-                <input type="text" name="comment">
-            </div>
+                <h2>Ajouter une carte</h2>
 
-            <button type="submit">+ Ajouter une carte au panier</button> 
+                <div>
+                    <label for='name'>Nom de la carte* </label>
+                    <input type="text" name="name">
+                </div>
+                <div>
+                    <label for='number'>Numéro* </label>
+                    <input type="number" name="number">
+                </div>
+                <div>
+                    <label for='series'>Série* </label>
+                    <input type="text" name="series">
+                </div>
+                <div>
+                    <label for='language'>Langue* </label>
+                    <input type="text" name="language">
+                </div>
+                <div>
+                    <label for='service'>Service Value </label>
+                    <input type="checkbox" name="service">
+                </div>
+                <div>
+                    <label for='value'>Valeur déclarée* </label>
+                    <input type="number" name="value">
+                </div>
+                <div>
+                    <label for='comment'>Commentaire </label>
+                    <input type="text" name="comment">
+                </div>
 
-            <div v-if="fieldError" class="error">Veuillez remplir toutes les informations obligatoires</div>
+                <button type="submit">+ Ajouter une carte au panier</button> 
 
-        </form>
+                <div v-if="fieldError" class="error">Veuillez remplir toutes les informations obligatoires</div>
 
-        <ModalShow v-if="showModal" :text="modalText" :color="modalColor" />
+            </form>
+
+            <ModalShow v-if="showModal" :text="modalText" :color="modalColor" />
+
+        </div>
+
+        <LogIn v-else/>
 
     </div>
-
-    <LogIn v-else/>
 
 </template>
 

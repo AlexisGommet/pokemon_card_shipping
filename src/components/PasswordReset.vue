@@ -1,19 +1,23 @@
 <template>
 
-    <form @submit.prevent="handleSubmitReset" class="signUpForm">
+    <div>
 
-        <img src="../assets/arrow-left-solid.svg" alt="arrow_left" class="arrow" @click="mailSuccess = false;emits('goBack');"/>
+        <form @submit.prevent="handleSubmitReset" class="signUpForm">
 
-        <h2>Réinitialisation de mot de passe</h2>
+            <img src="../assets/arrow-left-solid.svg" alt="arrow_left" class="arrow" @click="mailSuccess = false;emits('goBack');"/>
 
-        <label>Email :</label>
-        <input class="inputClass" type="email" v-model="emailReset" required>
-        <div v-if="userErrorReset" class="error">Cet utilisateur n'existe pas</div>
-        <div v-if="mailSuccess" class="success">Mail envoyé avec succès</div>
+            <h2>Réinitialisation de mot de passe</h2>
 
-        <button class="submit" type="submit">Envoyer le mail de réinitialisation</button>  
+            <label>Email :</label>
+            <input class="inputClass" type="email" v-model="emailReset" required>
+            <div v-if="userErrorReset" class="error">Cet utilisateur n'existe pas</div>
+            <div v-if="mailSuccess" class="success">Mail envoyé avec succès</div>
 
-    </form>  
+            <button class="submit" type="submit">Envoyer le mail de réinitialisation</button>  
+
+        </form>  
+
+    </div>
 
 </template>
 

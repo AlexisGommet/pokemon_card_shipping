@@ -19,7 +19,11 @@
             
         </div>
 
-        <router-view v-if="!firstLoad" @goBack="goBack()" @routeToSignUp="routeTo('signUp')" @routeToReset="routeTo('passwordReset')"></router-view> 
+        <router-view v-if="!firstLoad" v-slot="{ Component }" @goBack="goBack()" @routeToSignUp="routeTo('signUp')" @routeToReset="routeTo('passwordReset')">
+            <transition name="fade" mode="out-in">
+                <component :is="Component" />
+            </transition>
+        </router-view>
 
         <div v-if="router.currentRoute.value.fullPath === '/' && !firstLoad">
             <h1>PokePostie</h1>
@@ -86,6 +90,17 @@ function goBack(){
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+.fade-enter-from,
+.fade-leave-to{
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active{
+    transition: opacity 0.5s ease-out;
+}
+
 
 h1{
     position: absolute;

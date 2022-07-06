@@ -1,53 +1,57 @@
 <template>
 
-    <div v-if="isAuthenticated">
+    <div>
 
-        <ModalShow v-if="showModal" :text="modalText" :color="modalColor" style="top: 0px;"/>
+        <div v-if="isAuthenticated">
 
-        <form @submit.prevent="checkout">
+            <ModalShow v-if="showModal" :text="modalText" :color="modalColor" style="top: 0px;"/>
 
-            <img src="../assets/arrow-left-solid.svg" alt="arrow_left" class="arrow" @click="emits('goBack')"/>
+            <form @submit.prevent="checkout">
 
-            <h2>Entrez les informations de livraison</h2>
+                <img src="../assets/arrow-left-solid.svg" alt="arrow_left" class="arrow" @click="emits('goBack')"/>
 
-            <div>
-                <label for='name'>Prénom</label>
-                <input type="text" name="name">
-            </div>
-            <div>
-                <label for='lastname'>Nom</label>
-                <input type="text" name="lastname">
-            </div>
-            <div>
-                <label for='mail'>Email</label>
-                <input type="text" name="mail">
-            </div>
-            <div>
-                <label for='address1'>Ligne d'adresse 1</label>
-                <input type="text" name="address1">
-            </div>
-            <div>
-                <label for='address2'>Ligne d'adresse 2</label>
-                <input type="text" name="address2">
-            </div>
-            <div>
-                <label for='city'>Ville</label>
-                <input type="text" name="city">
-            </div>
-            <div>
-                <label for='postalcode'>Code Postal</label>
-                <input type="number" name="postalcode">
-            </div>    
-        
-            <button type="submit">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>
+                <h2>Entrez les informations de livraison</h2>
 
-            <div v-if="fieldError" class="error">Veuillez remplir tous les champs obligatoires</div>
-          
-        </form>
+                <div>
+                    <label for='name'>Prénom</label>
+                    <input type="text" name="name">
+                </div>
+                <div>
+                    <label for='lastname'>Nom</label>
+                    <input type="text" name="lastname">
+                </div>
+                <div>
+                    <label for='mail'>Email</label>
+                    <input type="text" name="mail">
+                </div>
+                <div>
+                    <label for='address1'>Ligne d'adresse 1</label>
+                    <input type="text" name="address1">
+                </div>
+                <div>
+                    <label for='address2'>Ligne d'adresse 2</label>
+                    <input type="text" name="address2">
+                </div>
+                <div>
+                    <label for='city'>Ville</label>
+                    <input type="text" name="city">
+                </div>
+                <div>
+                    <label for='postalcode'>Code Postal</label>
+                    <input type="number" name="postalcode">
+                </div>    
+            
+                <button type="submit">{{ btnContent }}<RingLoader v-if="checkoutLoad" :color="'#505257'" :size="30"/></button>
+
+                <div v-if="fieldError" class="error">Veuillez remplir tous les champs obligatoires</div>
+            
+            </form>
+
+        </div>
+
+        <LogIn v-else/>
 
     </div>
-
-    <LogIn v-else/>
 
 </template>
 

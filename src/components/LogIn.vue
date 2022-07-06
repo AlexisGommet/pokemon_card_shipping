@@ -1,45 +1,49 @@
 <template>
 
-    <div v-if="!authLoading && !redirectAuthLoading" >
+    <div>
 
-        <form @submit.prevent="handleSubmitLogin" class="signInContainer">
+        <div v-if="!authLoading && !redirectAuthLoading" >
 
-            <h2>Connectez-vous avec</h2>
+            <form @submit.prevent="handleSubmitLogin" class="signInContainer">
 
-            <input type="image" alt="google_button" src="./assets/btn_google_signin_dark_normal_web@2x.png" @click="login('Google')" class="signIn" />
-            <input type="image" alt="twitter_button" src="./assets/twitter-login.png" @click="login('Twitter')" class="signIn" />
-            <input type="image" alt="facebook_button" src="./assets/facebook_login.png" @click="login('Facebook')" class="signIn" />
+                <h2>Connectez-vous avec</h2>
+
+                <input type="image" alt="google_button" src="./assets/btn_google_signin_dark_normal_web@2x.png" @click="login('Google')" class="signIn" />
+                <input type="image" alt="twitter_button" src="./assets/twitter-login.png" @click="login('Twitter')" class="signIn" />
+                <input type="image" alt="facebook_button" src="./assets/facebook_login.png" @click="login('Facebook')" class="signIn" />
+                
+                <div class="lineContainer">
+                    <div class="line"></div>
+                    <h3>Ou</h3>
+                    <div class="line"></div>
+                </div>
+
+                <div v-if="alreadyExistErrorLogin" class="error">Ce mail est déjà utilisée pour un autre compte</div>
+
+                <div>
+                    <label>Email :</label>
+                    <input class="inputClass" type="email" v-model="emailLogin" required>
+                    <div v-if="userError" class="error">Cet utilisateur n'existe pas</div>
+
+                    <label>Mot de passe :</label>
+                    <input class="inputClass" type="password" v-model="passwordLogin" required>
+                    <div v-if="passwordErrorLogin" class="error">Mot de passe incorret</div>
+
+                    <div @click="emits('routeToReset')" class="forgotPassword">Mot de passe oublié</div>
+
+                    <button type="submit" id="connect" class="submit connectBtn">Se connecter</button>
+                    <div v-if="tooManyRequestsError" class="error">L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Veuillez réessayer plus tard.</div>
+                </div>
+
+                <a @click="emits('routeToSignUp')" class="submit" style="margin-top: 0px;">Créer un compte</a>
+
+            </form>
             
-            <div class="lineContainer">
-                <div class="line"></div>
-                <h3>Ou</h3>
-                <div class="line"></div>
-            </div>
+        </div>
 
-            <div v-if="alreadyExistErrorLogin" class="error">Ce mail est déjà utilisée pour un autre compte</div>
+        <RingLoader v-if="authLoading || redirectAuthLoading" :color="'#505257'" :size="100" class="loader"/>
 
-            <div>
-                <label>Email :</label>
-                <input class="inputClass" type="email" v-model="emailLogin" required>
-                <div v-if="userError" class="error">Cet utilisateur n'existe pas</div>
-
-                <label>Mot de passe :</label>
-                <input class="inputClass" type="password" v-model="passwordLogin" required>
-                <div v-if="passwordErrorLogin" class="error">Mot de passe incorret</div>
-
-                <div @click="emits('routeToReset')" class="forgotPassword">Mot de passe oublié</div>
-
-                <button type="submit" id="connect" class="submit connectBtn">Se connecter</button>
-                <div v-if="tooManyRequestsError" class="error">L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Veuillez réessayer plus tard.</div>
-            </div>
-
-            <a @click="emits('routeToSignUp')" class="submit" style="margin-top: 0px;">Créer un compte</a>
-
-        </form>
-        
     </div>
-
-    <RingLoader v-if="authLoading || redirectAuthLoading" :color="'#505257'" :size="100" class="loader"/>
 
 </template>
 
