@@ -189,15 +189,16 @@ form input[type=checkbox]{
     font-weight: bold;
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 400px) {
     form {
-        width: 300px;
+        padding: 5px;
+        width: 315px;
     }
     form div{
         width: 100%;
     }
     form input[type=checkbox]{
-        left: -53.5%;
+        left: -51.5%;
     }
 }
 
@@ -207,7 +208,6 @@ form input[type=checkbox]{
         margin-left: 15px;
     }
     form {
-        padding: 10px;
         margin-top: 25px;
         height: 550px;
         width: 225px;
@@ -221,6 +221,10 @@ form input[type=checkbox]{
     h2{
         margin: 5px;
     }
+}
+
+:root {
+  color-scheme: only light;
 }
 
 </style>

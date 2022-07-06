@@ -27,6 +27,10 @@ const logo = ref(isGreen.value ? true : false);
 
 <style scoped>
 
+:root {
+  color-scheme: only light;
+}
+
 .green{
     color: aquamarine;
 }

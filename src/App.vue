@@ -264,6 +264,10 @@ a:-webkit-any-link {
     cursor: pointer;
 }
 
+:root {
+  color-scheme: only light;
+}
+
 @media only screen and (max-width: 700px) {
     nav{
         position: fixed;

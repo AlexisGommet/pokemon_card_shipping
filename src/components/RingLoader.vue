@@ -86,4 +86,8 @@ export default {
         transform: rotate(360deg);
     }
 }
+
+:root {
+  color-scheme: only light;
+}
 </style>

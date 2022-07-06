@@ -159,6 +159,7 @@ async function deleteCard(id){
     background: rgb(243, 243, 243);
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
     padding: 20px;
+    width: 300px;
     border-radius: 10px;
     font-family: 'Roboto';
     font-weight: bold;
@@ -217,18 +218,15 @@ async function deleteCard(id){
     margin: 100px auto;
 }
 
+:root {
+  color-scheme: only light;
+}
+
 @media only screen and (max-width: 500px) {
     .basket{
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -4%);
-        margin-top: 200px;    
-    }
-}
-@media only screen and (max-width: 550px) {
-    .card{
-        width: 300px;
+        transform: translate(-50%, 0%);
     }
 }
 

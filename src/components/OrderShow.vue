@@ -217,15 +217,17 @@ form div{
     font-weight: bold;
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 400px) {
     form {
-        width: 300px;
+        padding: 5px;
+        width: 315px;
     }
     form div{
         width: 100%;
     }
     .error {
-        right: -25px;
+        top: -12px;
+        right: -30px;
     }
 }
 
@@ -249,8 +251,12 @@ form div{
         font-size: large;
     }
     .error {
-        right: -15px;
-        font-size: 0.75em;
+        top: -5px;
+        right: -10px;
     }
+}
+
+:root {
+  color-scheme: only light;
 }
 </style>

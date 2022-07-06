@@ -160,4 +160,8 @@ h2{
         width: 225px;
     }
 }
+
+:root {
+  color-scheme: only light;
+}
 </style>
