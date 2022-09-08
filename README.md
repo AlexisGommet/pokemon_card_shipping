@@ -1,6 +1,6 @@
 # pokemon_card_shipping
 
-https://pokemoncardshipping.web.app/
+https://pokemoncardshipping.alexisgommet.com
 
 Website concept for a French company to serve as an intermediary for grading Pokemon cards in the US with payments powered by Stripe
 
